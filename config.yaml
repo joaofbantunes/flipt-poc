@@ -1,0 +1,41 @@
+environments:
+  staging:
+    name: "staging"
+    storage: "git"
+    directory: "staging"
+    default: true
+
+  production:
+    name: "production"
+    storage: "git"
+    directory: "production"
+
+storage:
+  git:
+    name: "git"
+    backend:
+      type: local
+      path: "/tmp/flag-storage"
+    remote: "http://gitea-flipt:3000/johndoe/flipt-poc-flag-storage.git"
+    branch: "main"
+    fetch_policy: lenient
+    credentials: test-credentials
+
+credentials:
+  test-credentials:
+    type: basic
+    basic:
+      username: johndoe
+      password: "super_complex_password"
+
+authentication:
+  required: false
+
+log:
+  level: INFO
+  format: console
+metrics:
+  enabled: true
+  exporter: otlp
+tracing:
+  enabled: true

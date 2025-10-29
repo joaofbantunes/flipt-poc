@@ -1,0 +1,37 @@
+services:
+  flipt:
+    image: flipt/flipt:v2.3.0
+    container_name: flipt
+    ports:
+      - "8080:8080"
+      - "9000:9000"
+    volumes:
+      - ./config.yaml:/etc/flipt/config/default.yml
+      - ./flag-storage:/tmp/flag-storage
+    environment:
+      - OTEL_SERVICE_NAME=flipt
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-flipt:4318
+      # if needed
+      # OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <token>"
+    restart: unless-stopped
+  lgtm-flipt:
+    image: grafana/otel-lgtm
+    hostname: lgtm-flipt
+    container_name: lgtm-flipt
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # ui
+      - "4317:4317" # otlp gRPC
+      - "4318:4318" # otlp HTTP
+  gitea-flipt:
+    image: gitea/gitea:latest
+    hostname: gitea-flipt
+    container_name: gitea-flipt
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: unless-stopped
+    ports:
+      - "3001:3000" # Web UI
+      - "2222:22"   # SSH
